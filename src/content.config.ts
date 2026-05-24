@@ -1,10 +1,12 @@
-import { defineCollection, z } from 'astro:content';
+import { defineCollection } from 'astro:content';
+import { glob } from 'astro/loaders';
+import { z } from 'zod';
 
 /* =============================================
    OBRAS
    ============================================= */
 const obras = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: '**/*.md', base: './src/content/obras' }),
   schema: z.object({
     titulo: z.string(),
     año: z.string(),
@@ -25,7 +27,7 @@ const obras = defineCollection({
    PRODUCTOS
    ============================================= */
 const productos = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: '**/*.md', base: './src/content/productos' }),
   schema: z.object({
     nombre: z.string(),
     categoria: z.string(),
@@ -43,7 +45,7 @@ const productos = defineCollection({
    CURSOS
    ============================================= */
 const cursos = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: '**/*.md', base: './src/content/cursos' }),
   schema: z.object({
     titulo: z.string(),
     dia: z.string(),
@@ -66,7 +68,7 @@ const cursos = defineCollection({
    BLOG
    ============================================= */
 const blog = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: '**/*.md', base: './src/content/blog' }),
   schema: z.object({
     title: z.string(),
     description: z.string(),

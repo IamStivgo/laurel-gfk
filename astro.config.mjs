@@ -12,7 +12,9 @@ export default defineConfig({
     plugins: [tailwindcss()],
   },
   integrations: [
-    sitemap(),
+    sitemap({
+      filter: (page) => !page.includes('/gracias'),
+    }),
     partytown({
       config: {
         forward: ['dataLayer.push'],
