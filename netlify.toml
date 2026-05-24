@@ -1,0 +1,58 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Headers de seguridad y caché
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Redirects
+[[redirects]]
+  from = "/galeria"
+  to = "/mi-obra"
+  status = 301
+
+[[redirects]]
+  from = "/obra"
+  to = "/mi-obra"
+  status = 301
+
+[[redirects]]
+  from = "/shop"
+  to = "/productos"
+  status = 301
+
+[[redirects]]
+  from = "/cursos/*"
+  to = "/cursos#:splat"
+  status = 301
+  force = false
+
+# Formularios Netlify — página de gracias
+[[redirects]]
+  from = "/gracias"
+  to = "/gracias/index.html"
+  status = 200
