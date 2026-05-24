@@ -20,7 +20,7 @@ const schemaItems = cursos.map((c) => ({
   "provider": {
     "@type": "Person",
     "name": "Laurel.gfk",
-    "url": "https://laurelgfk.com"
+    "url": SITE.url
   },
   "offers": {
     "@type": "Offer",
@@ -29,7 +29,7 @@ const schemaItems = cursos.map((c) => ({
   },
   "courseMode": "Online",
   "startDate": c.data.starts,
-  "url": `https://laurelgfk.com/cursos#${c.id}`
+  "url": `${SITE.url}/cursos#${c.id}`
 }));
 ---
 

@@ -1,6 +1,6 @@
 export const SITE = {
   name: 'Laurel.gfk',
-  url: 'https://laurelgfk.com',
+  url: (import.meta.env.PUBLIC_SITE_URL as string | undefined)?.replace(/\/$/, '') ?? 'https://laurel-gfk.vercel.app',
   description:
     'Artista plástica y muralista en Bogotá. Murales, pintura original, prints y cursos de arte.',
   instagram: 'https://www.instagram.com/laurel.gfk',

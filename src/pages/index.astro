@@ -22,19 +22,18 @@ const waUrl = `https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent(SITE.wha
 >
   <slot name="head" slot="head">
     <!-- Schema Person + WebSite + LocalBusiness + SearchAction -->
-    <script type="application/ld+json">
-    {
+    <script type="application/ld+json" set:html={JSON.stringify({
       "@context": "https://schema.org",
       "@graph": [
         {
           "@type": "Person",
-          "@id": "https://laurelgfk.com/#laurel",
+          "@id": `${SITE.url}/#laurel`,
           "name": "Laurel.gfk",
           "jobTitle": "Artista plástica y muralista",
-          "url": "https://laurelgfk.com",
+          "url": SITE.url,
           "sameAs": [
-            "https://www.instagram.com/laurel.gfk",
-            "https://linktr.ee/laurel.gfk"
+            SITE.instagram,
+            SITE.linktree
           ],
           "address": {
             "@type": "PostalAddress",
@@ -44,28 +43,28 @@ const waUrl = `https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent(SITE.wha
         },
         {
           "@type": "WebSite",
-          "@id": "https://laurelgfk.com/#website",
-          "url": "https://laurelgfk.com",
+          "@id": `${SITE.url}/#website`,
+          "url": SITE.url,
           "name": "Laurel.gfk",
-          "publisher": { "@id": "https://laurelgfk.com/#laurel" },
+          "publisher": { "@id": `${SITE.url}/#laurel` },
           "potentialAction": {
             "@type": "SearchAction",
             "target": {
               "@type": "EntryPoint",
-              "urlTemplate": "https://laurelgfk.com/blog?q={search_term_string}"
+              "urlTemplate": `${SITE.url}/blog?q={search_term_string}`
             },
             "query-input": "required name=search_term_string"
           }
         },
         {
           "@type": "LocalBusiness",
-          "@id": "https://laurelgfk.com/#business",
+          "@id": `${SITE.url}/#business`,
           "name": "Laurel.gfk — Arte y Murales",
           "description": "Artista plástica y muralista en Bogotá. Murales, comisiones, prints y cursos de arte.",
-          "url": "https://laurelgfk.com",
-          "telephone": "+573332672352",
+          "url": SITE.url,
+          "telephone": `+${SITE.whatsapp}`,
           "email": "hola@laurelgfk.com",
-          "image": "https://laurelgfk.com/og-default.jpg",
+          "image": `${SITE.url}/og-default.jpg`,
           "priceRange": "$$",
           "currenciesAccepted": "COP",
           "areaServed": {
@@ -79,13 +78,12 @@ const waUrl = `https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent(SITE.wha
             "addressCountry": "CO"
           },
           "sameAs": [
-            "https://www.instagram.com/laurel.gfk",
-            "https://linktr.ee/laurel.gfk"
+            SITE.instagram,
+            SITE.linktree
           ]
         }
       ]
-    }
-    </script>
+    })} />
   </slot>
 
   <!-- ======================================================

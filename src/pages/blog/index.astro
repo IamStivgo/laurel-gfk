@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
+import { SITE } from '../../config/site';
 
 const posts = (await getCollection('blog'))
   .filter(p => !p.data.draft)
@@ -16,15 +17,13 @@ const formatDate = (d: Date) =>
   active="blog"
 >
   <slot name="head" slot="head">
-    <script type="application/ld+json">
-    {
+    <script type="application/ld+json" set:html={JSON.stringify({
       "@context": "https://schema.org",
       "@type": "Blog",
       "name": "Blog · Laurel.gfk",
-      "url": "https://laurelgfk.com/blog",
-      "author": { "@type": "Person", "name": "Laurel.gfk", "url": "https://laurelgfk.com" }
-    }
-    </script>
+      "url": `${SITE.url}/blog`,
+      "author": { "@type": "Person", "name": "Laurel.gfk", "url": SITE.url }
+    })} />
   </slot>
 
   <!-- Header -->

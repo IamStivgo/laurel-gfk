@@ -4,9 +4,11 @@ import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
 import partytown from '@astrojs/partytown';
 
+const SITE_URL = (process.env.PUBLIC_SITE_URL ?? 'https://laurel-gfk.vercel.app').replace(/\/$/, '');
+
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://laurelgfk.com',
+  site: SITE_URL,
   output: 'static',
   vite: {
     plugins: [tailwindcss()],

@@ -11,20 +11,18 @@ const waUrl = `https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent(SITE.wha
   active="contacto"
 >
   <slot name="head" slot="head">
-    <script type="application/ld+json">
-    {
+    <script type="application/ld+json" set:html={JSON.stringify({
       "@context": "https://schema.org",
       "@type": "ContactPage",
       "name": "Contacto · Laurel.gfk",
-      "url": "https://laurelgfk.com/contacto",
+      "url": `${SITE.url}/contacto`,
       "mainEntity": {
         "@type": "Person",
         "name": "Laurel.gfk",
-        "url": "https://laurelgfk.com",
+        "url": SITE.url,
         "sameAs": ["https://www.instagram.com/laurel.gfk"]
       }
-    }
-    </script>
+    })} />
   </slot>
 
   <!-- Header -->

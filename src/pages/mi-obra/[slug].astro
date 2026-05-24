@@ -37,9 +37,9 @@ const schemaType = data.categoria === 'mural' ? 'Painting' : 'VisualArtwork';
       "locationCreated": { "@type": "Place", "name": data.lugar },
       "artMedium": data.tecnica,
       "artworkSurface": data.categoria === 'mural' ? "Pared / muro" : "Lienzo",
-      "creator": { "@type": "Person", "name": "Laurel.gfk", "url": "https://laurelgfk.com" },
+      "creator": { "@type": "Person", "name": "Laurel.gfk", "url": SITE.url },
       "description": data.descripcion,
-      "url": `https://laurelgfk.com/mi-obra/${obra.id}`
+      "url": `${SITE.url}/mi-obra/${obra.id}`
     })} />
   </slot>
 

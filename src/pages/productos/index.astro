@@ -32,7 +32,7 @@ const schemaItems = productosOrdenados.map((p, i) => ({
       "priceCurrency": "COP",
       "price": p.data.precio.replace(/[^0-9.]/g, ''),
       "availability": p.data.estado === 'disp' ? "https://schema.org/InStock" : "https://schema.org/PreOrder",
-      "url": `https://laurelgfk.com/productos/${p.id}`
+      "url": `${SITE.url}/productos/${p.id}`
     }
   }
 }));
@@ -48,7 +48,7 @@ const schemaItems = productosOrdenados.map((p, i) => ({
       "@context": "https://schema.org",
       "@type": "ItemList",
       "name": "Productos Laurel.gfk",
-      "url": "https://laurelgfk.com/productos",
+      "url": `${SITE.url}/productos`,
       "itemListElement": schemaItems
     })} />
   </slot>

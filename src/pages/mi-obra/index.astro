@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import CTABanner from '../../components/ui/CTABanner.astro';
 import { getCollection } from 'astro:content';
+import { SITE } from '../../config/site';
 
 const obras = await getCollection('obras');
 const murales = obras.filter(o => o.data.categoria === 'mural').sort((a, b) => a.data.orden - b.data.orden);
@@ -14,15 +15,13 @@ const lienzos = obras.filter(o => o.data.categoria === 'lienzo' || o.data.catego
   active="obra"
 >
   <slot name="head" slot="head">
-    <script type="application/ld+json">
-    {
+    <script type="application/ld+json" set:html={JSON.stringify({
       "@context": "https://schema.org",
       "@type": "CreativeWorkSeries",
       "name": "Obra de Laurel.gfk",
-      "url": "https://laurelgfk.com/mi-obra",
-      "creator": { "@type": "Person", "name": "Laurel.gfk", "url": "https://laurelgfk.com" }
-    }
-    </script>
+      "url": `${SITE.url}/mi-obra`,
+      "creator": { "@type": "Person", "name": "Laurel.gfk", "url": SITE.url }
+    })} />
   </slot>
 
   <!-- Page header -->

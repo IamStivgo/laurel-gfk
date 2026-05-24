@@ -37,14 +37,14 @@ const formatDate = (d: Date) =>
       "author": {
         "@type": "Person",
         "name": data.author,
-        "url": "https://laurelgfk.com"
+        "url": SITE.url
       },
       "publisher": {
         "@type": "Person",
         "name": "Laurel.gfk",
-        "url": "https://laurelgfk.com"
+        "url": SITE.url
       },
-      "url": `https://laurelgfk.com/blog/${post.id}`,
+      "url": `${SITE.url}/blog/${post.id}`,
       "keywords": data.tags.join(', ')
     })} />
   </slot>

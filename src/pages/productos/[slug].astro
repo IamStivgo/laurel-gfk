@@ -45,8 +45,8 @@ const priceNumber = data.precio.replace(/[^0-9.]/g, '');
         "priceCurrency": "COP",
         "price": priceNumber,
         "availability": data.estado === 'disp' ? "https://schema.org/InStock" : "https://schema.org/PreOrder",
-        "url": `https://laurelgfk.com/productos/${producto.id}`,
-        "seller": { "@type": "Person", "name": "Laurel.gfk", "url": "https://laurelgfk.com" }
+        "url": `${SITE.url}/productos/${producto.id}`,
+        "seller": { "@type": "Person", "name": "Laurel.gfk", "url": SITE.url }
       }
     })} />
   </slot>
