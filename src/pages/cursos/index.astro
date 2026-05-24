@@ -1,0 +1,202 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { SITE } from '../../config/site';
+
+// Ordenar por día de la semana (lun → vie)
+const ORDER: Record<string, number> = { lun: 1, mar: 2, mie: 3, jue: 4, vie: 5 };
+const cursos = (await getCollection('cursos')).sort(
+  (a, b) => (ORDER[a.data.dayCls] ?? 9) - (ORDER[b.data.dayCls] ?? 9)
+);
+
+const waUrl = `https://wa.me/${SITE.whatsapp}`;
+
+// Schemas para cada curso
+const schemaItems = cursos.map((c) => ({
+  "@context": "https://schema.org",
+  "@type": "Course",
+  "name": c.data.titulo,
+  "description": c.data.summary,
+  "provider": {
+    "@type": "Person",
+    "name": "Laurel.gfk",
+    "url": "https://laurelgfk.com"
+  },
+  "offers": {
+    "@type": "Offer",
+    "price": c.data.precio.replace(/[^0-9.]/g, ''),
+    "priceCurrency": "COP"
+  },
+  "courseMode": "Online",
+  "startDate": c.data.starts,
+  "url": `https://laurelgfk.com/cursos#${c.id}`
+}));
+---
+
+<BaseLayout
+  title="Cursos de pintura y dibujo online · Laurel.gfk"
+  description="Cursos virtuales en vivo de pintura al óleo, dibujo manga, teoría del color, retoque digital y más. Para niñxs, jóvenes y adultos. Grupos pequeños."
+  active="cursos"
+>
+  <slot name="head" slot="head">
+    {schemaItems.map(s => (
+      <script type="application/ld+json" set:html={JSON.stringify(s)} />
+    ))}
+  </slot>
+
+  <!-- Header -->
+  <section class="page-head reveal">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="/">Inicio</a>
+        <span>/</span>
+        <span>Cursos</span>
+      </div>
+      <h1 class="h-display">Aprende <em>conmigo</em>.</h1>
+      <p class="lead" style="margin-top:24px;">
+        Cursos virtuales en vivo. Grupos pequeños, mucho color y técnica real.
+        Pintura, dibujo, color, manga y retoque digital — para niñxs, jóvenes y adultos.
+      </p>
+    </div>
+  </section>
+
+  <!-- ======================================================
+       LISTA DE CURSOS
+       ====================================================== -->
+  <section style="padding-top:0;" class="reveal">
+    <div class="container">
+      <div class="courses-intro">
+        <div>
+          <div class="kicker">Próximo ciclo · Junio 2026</div>
+          <h2 class="h-section">Cinco cursos, <em>una sola</em> apertura.</h2>
+        </div>
+        <div>
+          <p class="lead">
+            Inscripciones del <strong>20 al 31 de mayo</strong>. Apertura del curso con mínimo 5 personas.
+            Si no se llena, te devuelvo cualquier abono.
+          </p>
+        </div>
+      </div>
+
+      <div class="courses-grid">
+        {cursos.map((c) => {
+          const waMsg = encodeURIComponent(`¡Hola Laurel! Me interesa el curso de ${c.data.titulo}`);
+          return (
+            <div class="course-card">
+              <div class="course-card-head">
+                <span class={`course-day ${c.data.dayCls}`}>{c.data.dia}</span>
+                <span class="course-price">{c.data.precio}</span>
+              </div>
+              <div>
+                <h3>{c.data.titulo}</h3>
+                <div class="meta" style="margin-top:6px;">
+                  {c.data.audiencia} · {c.data.horario} · {c.data.duracion}
+                </div>
+              </div>
+              <p class="summary">{c.data.summary}</p>
+              <div class="course-card-foot">
+                <a href={`#${c.id}`} class="course-link">Ver descripción completa →</a>
+                <a
+                  href={`${waUrl}?text=${waMsg}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="course-link"
+                  style="color:var(--magenta);"
+                >
+                  Inscribirme
+                </a>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================
+       DETALLES POR ANCLA (una sola página, como el diseño)
+       ====================================================== -->
+  <section style="padding-top:32px; padding-bottom:0;" class="reveal">
+    <div class="container">
+      {cursos.map((c) => {
+        const waMsg = encodeURIComponent(`¡Hola Laurel! Quiero inscribirme al curso de ${c.data.titulo}`);
+        return (
+          <div class="course-detail" id={c.id}>
+            <div class="course-detail-head">
+              <div>
+                <div class="kicker">Curso · {c.id}</div>
+                <h2 class="h-section" style="margin-bottom:0;">{c.data.titulo}</h2>
+                {c.data.desc.map((p) => (
+                  <p class="lead" style="margin-top:16px;">{p}</p>
+                ))}
+              </div>
+              <div class="course-detail-side">
+                <div class="row">
+                  <span class="lab">Audiencia</span>
+                  <span class="val">{c.data.audiencia}</span>
+                </div>
+                <div class="row">
+                  <span class="lab">Horario</span>
+                  <span class="val">{c.data.horario}</span>
+                </div>
+                <div class="row">
+                  <span class="lab">Duración</span>
+                  <span class="val">{c.data.duracion}</span>
+                </div>
+                <div class="row">
+                  <span class="lab">Modalidad</span>
+                  <span class="val">{c.data.modo.split('·')[0].trim()}</span>
+                </div>
+                <div class="row">
+                  <span class="lab">Nivel</span>
+                  <span class="val">{c.data.nivel}</span>
+                </div>
+                <div class="row">
+                  <span class="lab">Inversión</span>
+                  <span class="val" style="font-family:var(--display); font-size:22px;">{c.data.precio}</span>
+                </div>
+                <a
+                  href={`${waUrl}?text=${waMsg}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="btn btn-primary"
+                  style="justify-content:center;"
+                >
+                  Inscribirme →
+                </a>
+              </div>
+            </div>
+
+            <div class="course-detail-body">
+              <div>
+                <h4>¿Qué vas a aprender?</h4>
+                <ul>
+                  {c.data.learn.map((l) => <li>{l}</li>)}
+                </ul>
+              </div>
+              <div>
+                <h4>Materiales</h4>
+                <ul>
+                  {c.data.materials.map((m) => <li>{m}</li>)}
+                </ul>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-banner reveal" style="margin-top:96px;">
+    <div class="container">
+      <div class="kicker" style="color:rgba(244,239,230,0.5);">Inscripciones abiertas</div>
+      <h2>¿Listx para <em>pintar</em>?</h2>
+      <p class="lead">Escríbeme por WhatsApp para reservar tu cupo. Te confirmo apertura del curso una semana antes del inicio.</p>
+      <div class="actions">
+        <a href={waUrl} target="_blank" rel="noopener noreferrer" class="btn btn-primary">Inscribirme por WhatsApp →</a>
+        <a href={SITE.instagram} target="_blank" rel="noopener noreferrer" class="btn">Ver más en Instagram</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

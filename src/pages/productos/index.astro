@@ -1,0 +1,205 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { SITE } from '../../config/site';
+
+const productos = await getCollection('productos');
+
+// Ordenar: disponibles primero, luego open, luego reserved
+const ordenEstado = { disp: 0, open: 1, reserved: 2 };
+const productosOrdenados = [...productos].sort(
+  (a, b) => (ordenEstado[a.data.estado] ?? 9) - (ordenEstado[b.data.estado] ?? 9)
+);
+
+const STATE_LABEL: Record<string, { text: string; cls: string }> = {
+  disp: { text: 'DISPONIBLE', cls: 'disp' },
+  reserved: { text: 'RESERVADO', cls: '' },
+  open: { text: 'POR ENCARGO', cls: '' },
+};
+
+const waUrl = `https://wa.me/${SITE.whatsapp}`;
+
+// Lista de todos los productos como ItemList para Schema
+const schemaItems = productosOrdenados.map((p, i) => ({
+  "@type": "ListItem",
+  "position": i + 1,
+  "item": {
+    "@type": "Product",
+    "name": p.data.nombre,
+    "description": p.data.descripcion ?? p.data.categoria,
+    "offers": {
+      "@type": "Offer",
+      "priceCurrency": "COP",
+      "price": p.data.precio.replace(/[^0-9.]/g, ''),
+      "availability": p.data.estado === 'disp' ? "https://schema.org/InStock" : "https://schema.org/PreOrder",
+      "url": `https://laurelgfk.com/productos/${p.id}`
+    }
+  }
+}));
+---
+
+<BaseLayout
+  title="Obra a la venta — Originales y prints · Laurel.gfk"
+  description="Compra obra original, prints firmados y objetos de Laurel.gfk. Envíos desde Bogotá. Comisiones abiertas."
+  active="productos"
+>
+  <slot name="head" slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": "Productos Laurel.gfk",
+      "url": "https://laurelgfk.com/productos",
+      "itemListElement": schemaItems
+    })} />
+  </slot>
+
+  <!-- Header -->
+  <section class="page-head reveal">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="/">Inicio</a>
+        <span>/</span>
+        <span>Productos</span>
+      </div>
+      <h1 class="h-display">A la <em>venta</em>.</h1>
+    </div>
+  </section>
+
+  <!-- Productos con filtros -->
+  <section style="padding-top:0;" class="reveal">
+    <div class="container">
+      <div style="display:flex; justify-content:space-between; align-items:end; gap:24px; margin-bottom:32px; flex-wrap:wrap;">
+        <div>
+          <div class="kicker">Productos a la venta</div>
+          <h2 class="h-section">Obra <em>disponible</em>.</h2>
+          <p class="lead">Originales, prints firmados y pequeños objetos. Todo se despacha desde Bogotá. Para encargos personalizados, escríbeme directo.</p>
+        </div>
+      </div>
+
+      <!-- Filtros con radio CSS puro -->
+      <input type="radio" name="filtro" id="f-todos" class="filter-radio" checked />
+      <input type="radio" name="filtro" id="f-original" class="filter-radio" />
+      <input type="radio" name="filtro" id="f-print" class="filter-radio" />
+      <input type="radio" name="filtro" id="f-merch" class="filter-radio" />
+      <input type="radio" name="filtro" id="f-encargo" class="filter-radio" />
+
+      <div class="statement-toggle filter-bar" style="margin-bottom:40px; flex-wrap:wrap;">
+        <label for="f-todos" class="filter-btn">Todos</label>
+        <label for="f-original" class="filter-btn">Originales</label>
+        <label for="f-print" class="filter-btn">Prints</label>
+        <label for="f-merch" class="filter-btn">Pequeños objetos</label>
+        <label for="f-encargo" class="filter-btn">Por encargo</label>
+      </div>
+
+      <div class="productos-grid" id="productos-grid">
+        {productosOrdenados.map((p) => {
+          const sl = STATE_LABEL[p.data.estado];
+          const waMsg = encodeURIComponent(`¡Hola Laurel! Me interesa "${p.data.nombre}" — ${p.data.categoria}. ¿Sigue disponible?`);
+          const isOriginal = p.data.categoria.includes('Original') || p.data.categoria.includes('mixta');
+          const isPrint = p.data.categoria.includes('Print') || p.data.categoria.includes('Lámina');
+          const isMerch = p.data.categoria.includes('Sticker') || p.data.categoria.includes('Pin');
+          const isEncargo = p.data.categoria.includes('Comisión');
+
+          return (
+            <div
+              class="producto-card"
+              data-cat={`${isOriginal ? 'original ' : ''}${isPrint ? 'print ' : ''}${isMerch ? 'merch ' : ''}${isEncargo ? 'encargo ' : ''}todos`}
+            >
+              <a href={`/productos/${p.id}`} class="producto-img">
+                <div class={`ph ${p.data.color}`} style="height:100%;">
+                  <span class="label">{p.data.nombre}</span>
+                </div>
+                <span class={`tag ${sl.cls}`}>{sl.text}</span>
+              </a>
+              <div>
+                <div class="pmeta">{p.data.categoria}</div>
+                <h3 class="pname">
+                  <a href={`/productos/${p.id}`}>{p.data.nombre}</a>
+                </h3>
+                <div class="pmeta" style="margin-top:4px;">{p.data.tamaño} · {p.data.año}</div>
+              </div>
+              <div class="pfoot">
+                <span class="pprice">{p.data.precio}</span>
+                <a href={`https://wa.me/${SITE.whatsapp}?text=${waMsg}`} target="_blank" rel="noopener noreferrer" class="pcta">
+                  {p.data.estado === 'disp' ? 'Comprar' : p.data.estado === 'reserved' ? 'Lista de espera' : 'Pedir encargo'} →
+                </a>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <!-- Encargo personalizado -->
+      <div style="margin-top:48px; padding:24px 28px; border:1px dashed var(--line-strong); border-radius:12px; display:flex; justify-content:space-between; align-items:center; gap:24px; flex-wrap:wrap;">
+        <div>
+          <h4 style="font-family:var(--display); font-size:22px; letter-spacing:-0.02em; margin:0 0 4px;">¿No ves lo que buscas?</h4>
+          <p style="color:var(--ink-soft); margin:0;">Hago retratos por encargo, comisiones a medida y prints especiales bajo pedido.</p>
+        </div>
+        <a href={waUrl} target="_blank" rel="noopener noreferrer" class="btn btn-primary">Pedir encargo →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA envíos -->
+  <section class="cta-banner reveal">
+    <div class="container">
+      <div class="kicker" style="color:rgba(244,239,230,0.5);">Envíos a todo Colombia</div>
+      <h2>Todo se empaca <em>con cuidado</em>.</h2>
+      <p class="lead">Despachos nacionales en 3–5 días hábiles. Internacionales bajo cotización.</p>
+      <div class="actions">
+        <a href={waUrl} target="_blank" rel="noopener noreferrer" class="btn btn-primary">Consultar envío →</a>
+        <a href="/mi-obra" class="btn">Ver más obra</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .filter-radio { display: none; }
+
+  .filter-btn {
+    padding: 9px 18px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  /* Activos */
+  #f-todos:checked ~ .filter-bar .filter-btn[for="f-todos"],
+  #f-original:checked ~ .filter-bar .filter-btn[for="f-original"],
+  #f-print:checked ~ .filter-bar .filter-btn[for="f-print"],
+  #f-merch:checked ~ .filter-bar .filter-btn[for="f-merch"],
+  #f-encargo:checked ~ .filter-bar .filter-btn[for="f-encargo"] {
+    background: var(--violet);
+    color: var(--paper);
+  }
+</style>
+
+<script>
+  // Filtrado de productos
+  function initFilter() {
+    const radios = document.querySelectorAll<HTMLInputElement>('.filter-radio');
+    const cards = document.querySelectorAll<HTMLElement>('.producto-card');
+
+    function applyFilter() {
+      const checked = document.querySelector<HTMLInputElement>('.filter-radio:checked');
+      const filtro = checked?.id.replace('f-', '') ?? 'todos';
+
+      cards.forEach((card) => {
+        const cats = card.dataset.cat ?? '';
+        const show = filtro === 'todos' || cats.includes(filtro);
+        card.style.display = show ? 'flex' : 'none';
+      });
+    }
+
+    radios.forEach(r => r.addEventListener('change', applyFilter));
+    applyFilter();
+  }
+
+  initFilter();
+</script>

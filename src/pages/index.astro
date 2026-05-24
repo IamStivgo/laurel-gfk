@@ -1,15 +1,255 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import CTABanner from '../components/ui/CTABanner.astro';
+import { getCollection } from 'astro:content';
+import { SITE } from '../config/site';
+import { SERVICES, STEPS } from '../data/services';
+
+// Obras destacadas para el PortfolioStrip
+const obras = await getCollection('obras');
+const destacadas = obras
+  .filter(o => o.data.destacada)
+  .sort((a, b) => a.data.orden - b.data.orden)
+  .slice(0, 6);
+
+const waUrl = `https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent(SITE.whatsappMsg)}`;
 ---
 
-<BaseLayout title="Laurel.gfk — Artista plástica y muralista en Bogotá">
-  <!-- Contenido del landing se construirá en el Paso 4 -->
-  <main class="container" style="padding-top: 80px;">
-    <h1 style="font-family: var(--display); font-size: clamp(48px, 8vw, 100px);">
-      Laurel<em style="color: var(--magenta);">.gfk</em>
-    </h1>
-    <p class="lead" style="margin-top: 24px;">
-      Artista plástica y muralista en Bogotá. Construyendo el sitio…
-    </p>
-  </main>
+<BaseLayout
+  title="Laurel.gfk — Artista plástica y muralista en Bogotá"
+  description="Artista plástica y muralista en Bogotá. Murales, comisiones, prints, cursos de arte y gestión cultural. 10 años de práctica."
+  active="inicio"
+>
+  <slot name="head" slot="head">
+    <!-- Schema Person + WebSite -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Person",
+          "@id": "https://laurelgfk.com/#laurel",
+          "name": "Laurel.gfk",
+          "jobTitle": "Artista plástica y muralista",
+          "url": "https://laurelgfk.com",
+          "sameAs": ["https://www.instagram.com/laurel.gfk", "https://linktr.ee/laurel.gfk"],
+          "address": { "@type": "PostalAddress", "addressLocality": "Bogotá", "addressCountry": "CO" }
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://laurelgfk.com/#website",
+          "url": "https://laurelgfk.com",
+          "name": "Laurel.gfk",
+          "publisher": { "@id": "https://laurelgfk.com/#laurel" }
+        }
+      ]
+    }
+    </script>
+  </slot>
+
+  <!-- ======================================================
+       HERO
+       ====================================================== -->
+  <section class="hero reveal">
+    <div class="container">
+      <div class="hero-grid">
+        <!-- Texto -->
+        <div>
+          <div class="kicker">Artista plástica · Bogotá · 2015 — hoy</div>
+          <h1 class="h-display">
+            Pintar es <em>habitar</em><br/>
+            el mundo.
+          </h1>
+          <p class="hero-tagline">
+            Soy Laurel. Trabajo en muros, lienzos, pantallas y aulas. Mi práctica se sostiene en tres ejes:
+            <strong>obra propia</strong>, <strong>docencia</strong> y <strong>gestión cultural</strong>.
+          </p>
+          <div class="hero-meta">
+            <a href="/mi-obra" class="btn btn-primary">
+              Ver mi obra
+              <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M13 5l7 7-7 7"/>
+              </svg>
+            </a>
+            <a href={waUrl} target="_blank" rel="noopener noreferrer" class="btn">Solicitar cotización</a>
+          </div>
+          <div class="hero-stats">
+            <div>
+              <div class="num">10</div>
+              <div class="lbl">años pintando</div>
+            </div>
+            <div>
+              <div class="num">80+</div>
+              <div class="lbl">murales realizados</div>
+            </div>
+            <div>
+              <div class="num">200+</div>
+              <div class="lbl">estudiantes</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Retrato / Placeholder -->
+        <div class="hero-portrait">
+          <span class="badge">★ Comisiones abiertas</span>
+          <div class="ph paper" style="justify-content:center; align-items:center;">
+            <span class="label">Foto · Laurel en estudio</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================
+       TRES PILARES
+       ====================================================== -->
+  <section class="pillars reveal" id="sobre">
+    <div class="container">
+      <div class="kicker">Sobre mí · tres ejes</div>
+      <h2 class="h-section">Tres formas de <em>hacer</em>, una misma práctica.</h2>
+      <p class="lead">
+        Mi trabajo se mueve entre el muro, el aula y la gestión. Cada eje alimenta al otro:
+        la obra me enseña qué enseñar, la docencia me enseña a escuchar, y la gestión me enseña a tejer comunidad.
+      </p>
+
+      <div class="pillars-grid">
+        <div class="pillar">
+          <div class="icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 19h18M5 19v-7l3-4h4l3-3 4 4v10"/><path d="M9 12h.01M14 9h.01"/>
+            </svg>
+          </div>
+          <div class="pn">Eje 01</div>
+          <h3>Artista plástica & muralista</h3>
+          <p>Pintura sobre muro, lienzo y pantalla. Obra personal y por encargo. Murales para hogares, comercios y espacio público en Bogotá y otras ciudades.</p>
+        </div>
+        <div class="pillar">
+          <div class="icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/>
+            </svg>
+          </div>
+          <div class="pn">Eje 02</div>
+          <h3>Docencia & formación artística</h3>
+          <p>Cursos virtuales y presenciales en pintura, dibujo, color, manga y retoque digital. Clases para niñxs, jóvenes y adultos. También conferencias de teoría del arte.</p>
+        </div>
+        <div class="pillar">
+          <div class="icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2M16 3.13a4 4 0 0 1 0 7.75M22 21v-2a4 4 0 0 0-3-3.87"/>
+            </svg>
+          </div>
+          <div class="pn">Eje 03</div>
+          <h3>Gestión cultural</h3>
+          <p>Curaduría, proyectos comunitarios y producción de iniciativas culturales. Acompaño a colectivos y espacios independientes en pensar y montar sus apuestas.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================
+       PORTFOLIO STRIP — obras destacadas desde la colección
+       ====================================================== -->
+  <section id="portafolio" class="reveal">
+    <div class="container">
+      <div style="display:flex; justify-content:space-between; align-items:end; gap:24px; margin-bottom:40px; flex-wrap:wrap;">
+        <div>
+          <div class="kicker">Portafolio</div>
+          <h2 class="h-section">Una muestra <em>breve</em>.</h2>
+        </div>
+        <a href="/mi-obra" class="btn">
+          Ver toda la obra
+          <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M13 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </div>
+
+      <div class="portfolio-strip">
+        {destacadas.map((obra) => (
+          <a
+            href={`/mi-obra/${obra.id}`}
+            class="ps-card"
+            style={`grid-column: span ${obra.data.span};`}
+          >
+            <div class={`ph ${obra.data.color}`} style="height:100%;">
+              <span class="label">{obra.data.titulo} · {obra.data.año}</span>
+            </div>
+            <span class="meta">{obra.data.categoria === 'mural' ? 'Mural' : obra.data.categoria === 'lienzo' ? 'Lienzo' : 'Digital'}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================
+       SERVICIOS
+       ====================================================== -->
+  <section
+    id="servicios"
+    class="reveal"
+    style="background:var(--paper-2); border-top:1px solid var(--line); border-bottom:1px solid var(--line);"
+  >
+    <div class="container">
+      <div class="kicker">Servicios</div>
+      <h2 class="h-section">Nueve maneras de <em>trabajar</em> juntxs.</h2>
+      <p class="lead">
+        Desde un mural hasta una curaduría. Los precios son una guía — cada proyecto se cotiza
+        según escala, complejidad y materiales.
+      </p>
+
+      <div class="services-grid">
+        {SERVICES.map((s) => (
+          <div class="service-tile">
+            <div class="num">{s.num} / 09</div>
+            <h4>{s.name}</h4>
+            <p>{s.desc}</p>
+            <div class="price">
+              <span style="color:var(--ink-mute)">Inversión</span>
+              <strong>{s.price}</strong>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================
+       PROCESO
+       ====================================================== -->
+  <section id="proceso" class="reveal">
+    <div class="container">
+      <div class="kicker">Proceso</div>
+      <h2 class="h-section">Cómo <em>trabajamos</em> juntxs.</h2>
+      <p class="lead">
+        Un mismo flujo para todo: mural, retrato, graffiti, fotografía, ilustración o clase.
+        Cuatro pasos pensados para que tengas claridad en cada etapa.
+      </p>
+
+      <div class="process-list">
+        {STEPS.map((s) => (
+          <div class="process-row">
+            <div class="pn">{s.num}</div>
+            <div>
+              <h4>{s.h}</h4>
+              <p>{s.p}</p>
+            </div>
+            <div class="applies-cell">
+              <div style="font-family:var(--mono); font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-mute); margin-bottom:10px;">
+                Aplica a
+              </div>
+              <div class="applies">
+                {s.applies.map((a) => <span>{a}</span>)}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================
+       CTA BANNER
+       ====================================================== -->
+  <CTABanner variant="landing" />
 </BaseLayout>

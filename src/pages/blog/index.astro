@@ -1,0 +1,92 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog'))
+  .filter(p => !p.data.draft)
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+
+const formatDate = (d: Date) =>
+  d.toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' });
+---
+
+<BaseLayout
+  title="Blog · Laurel.gfk"
+  description="Notas sobre proceso creativo, color, pintura y arte. Por Laurel.gfk, artista plástica y muralista en Bogotá."
+  active="blog"
+>
+  <slot name="head" slot="head">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Blog",
+      "name": "Blog · Laurel.gfk",
+      "url": "https://laurelgfk.com/blog",
+      "author": { "@type": "Person", "name": "Laurel.gfk", "url": "https://laurelgfk.com" }
+    }
+    </script>
+  </slot>
+
+  <!-- Header -->
+  <section class="page-head reveal">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="/">Inicio</a>
+        <span>/</span>
+        <span>Blog</span>
+      </div>
+      <h1 class="h-display">Notas de <em>proceso</em>.</h1>
+      <p class="lead" style="margin-top:24px;">
+        Reflexiones sobre color, pintura, muralismo y práctica artística.
+      </p>
+    </div>
+  </section>
+
+  <!-- Lista de posts -->
+  <section style="padding-top:0;" class="reveal">
+    <div class="container">
+      {posts.length === 0 ? (
+        <p class="lead" style="text-align:center; padding:80px 0;">
+          Pronto habrá publicaciones aquí. Mientras tanto, sígueme en
+          <a href="https://www.instagram.com/laurel.gfk" target="_blank" rel="noopener noreferrer" style="color:var(--magenta);">
+            @laurel.gfk
+          </a>.
+        </p>
+      ) : (
+        <div style="border-top:1px solid var(--line);">
+          {posts.map((post) => (
+            <article style="padding:36px 0; border-bottom:1px solid var(--line); display:grid; grid-template-columns:200px 1fr; gap:32px; align-items:start; transition:padding-left 0.2s;">
+              <!-- Fecha -->
+              <div style="font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--ink-mute); padding-top:6px;">
+                {formatDate(post.data.pubDate)}
+              </div>
+              <!-- Contenido -->
+              <div>
+                <a href={`/blog/${post.id}`} style="text-decoration:none;">
+                  <h2 style="font-family:var(--display); font-size:clamp(24px,3vw,36px); letter-spacing:-0.02em; font-weight:400; margin:0 0 12px; transition:color 0.15s;">
+                    {post.data.title}
+                  </h2>
+                </a>
+                <p style="color:var(--ink-soft); font-size:16px; margin:0 0 16px; line-height:1.55; max-width:65ch;">
+                  {post.data.description}
+                </p>
+                {post.data.tags.length > 0 && (
+                  <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                    {post.data.tags.map((tag) => (
+                      <span style="font-family:var(--mono); font-size:10.5px; letter-spacing:0.1em; text-transform:uppercase; padding:4px 10px; border:1px solid var(--line-strong); border-radius:999px; color:var(--ink-mute);">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                <a href={`/blog/${post.id}`} class="course-link" style="margin-top:16px; display:inline-flex;">
+                  Leer →
+                </a>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
+    </div>
+  </section>
+</BaseLayout>

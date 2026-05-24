@@ -1,0 +1,258 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CTABanner from '../../components/ui/CTABanner.astro';
+import { getCollection } from 'astro:content';
+
+const obras = await getCollection('obras');
+const murales = obras.filter(o => o.data.categoria === 'mural').sort((a, b) => a.data.orden - b.data.orden);
+const lienzos = obras.filter(o => o.data.categoria === 'lienzo' || o.data.categoria === 'digital').sort((a, b) => a.data.orden - b.data.orden);
+---
+
+<BaseLayout
+  title="Mi obra — Murales y pintura · Laurel.gfk"
+  description="Obra muralista y plástica de Laurel.gfk. Murales en Bogotá, pintura sobre lienzo, obra digital. 10 años de práctica."
+  active="obra"
+>
+  <slot name="head" slot="head">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "CreativeWorkSeries",
+      "name": "Obra de Laurel.gfk",
+      "url": "https://laurelgfk.com/mi-obra",
+      "creator": { "@type": "Person", "name": "Laurel.gfk", "url": "https://laurelgfk.com" }
+    }
+    </script>
+  </slot>
+
+  <!-- Page header -->
+  <section class="page-head reveal">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="/">Inicio</a>
+        <span>/</span>
+        <span>Mi obra</span>
+      </div>
+      <h1 class="h-display">Mi <em>obra</em>.</h1>
+    </div>
+  </section>
+
+  <!-- ======================================================
+       STATEMENT BILINGÜE — toggle con <input type="radio"> + CSS
+       ====================================================== -->
+  <section style="padding-top:0;" class="reveal">
+    <div class="container">
+      <div class="about-grid">
+        <!-- Retrato -->
+        <div class="about-portrait">
+          <div class="ph paper" style="justify-content:center; align-items:center;">
+            <span class="label">Retrato · Laurel</span>
+          </div>
+        </div>
+
+        <!-- Statement con toggle CSS puro -->
+        <div>
+          <!-- Radio ocultos como estado -->
+          <input type="radio" name="lang" id="lang-es" class="lang-radio" checked />
+          <input type="radio" name="lang" id="lang-en" class="lang-radio" />
+
+          <!-- Toggle visible -->
+          <div class="statement-toggle" style="margin-bottom:32px;">
+            <label for="lang-es" class="lang-btn">Español</label>
+            <label for="lang-en" class="lang-btn">English</label>
+          </div>
+
+          <!-- Kicker dinámico -->
+          <div class="kicker lang-kicker-es">Declaración</div>
+          <div class="kicker lang-kicker-en" style="display:none;">Artist Statement</div>
+
+          <h2 class="h-section">
+            <span class="lang-text-es">Pinto para <em>habitar</em>.</span>
+            <span class="lang-text-en" style="display:none;">I paint to <em>inhabit</em>.</span>
+          </h2>
+
+          <!-- Texto ES -->
+          <div class="statement lang-content-es">
+            <p>Pinto porque necesito habitar el mundo de otra manera. Mi práctica nace del cruce entre el muro y el cuerpo: el espacio público como lienzo abierto y el lienzo como espacio íntimo donde las decisiones pesan distinto.</p>
+            <p>Trabajo con color, gesto y materia. Me interesa lo que pasa cuando una pared deja de ser frontera y empieza a contar algo. Lo que pasa cuando un retrato deja de ser parecido y empieza a ser presencia.</p>
+            <p>Vengo del graffiti y de la academia, y eso marca cómo entiendo la pintura: como un acto que ocurre en público —incluso cuando se hace en soledad—. Pinto figuras, plantas, mujeres, animales y formas que se resisten a ser sólo decorativas.</p>
+            <p>Desde Bogotá, llevo diez años pintando, enseñando y gestionando proyectos. Mi obra es también mi forma de pensar la ciudad, el barrio y la pedagogía. Si lo pinto, es porque me pareció importante decirlo en voz alta.</p>
+          </div>
+
+          <!-- Texto EN -->
+          <div class="statement lang-content-en" style="display:none;">
+            <p>I paint to inhabit the world differently. My practice lives at the intersection of wall and body: public space as open canvas, canvas as intimate space where every decision weighs more.</p>
+            <p>I work with color, gesture and matter. I'm drawn to what happens when a wall stops being a boundary and starts telling a story. When a portrait stops being a likeness and becomes a presence.</p>
+            <p>I come from graffiti and from the academy, and that shapes how I understand painting: as an act that takes place in public —even when made in solitude—. I paint figures, plants, women, animals and forms that refuse to be merely decorative.</p>
+            <p>Based in Bogotá, I've spent ten years painting, teaching and managing cultural projects. My work is also my way of thinking the city, the neighborhood and pedagogy. If I paint it, it's because it felt important enough to say out loud.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================
+       OBRA TABS — radio CSS sin JS de framework
+       ====================================================== -->
+  <section class="reveal">
+    <div class="container">
+      <div class="kicker">Obra · 2015 — 2026</div>
+      <h2 class="h-section">Explora <em>la obra</em>.</h2>
+
+      <!-- Radio tabs -->
+      <input type="radio" name="tab" id="tab-mural" class="tab-radio" checked />
+      <input type="radio" name="tab" id="tab-plastica" class="tab-radio" />
+
+      <div class="obra-tabs">
+        <label for="tab-mural" class="tab-btn">Obra muralista</label>
+        <label for="tab-plastica" class="tab-btn">Obra plástica</label>
+      </div>
+
+      <!-- Murales -->
+      <div class="tab-content tab-mural-content">
+        <p class="lead" style="margin-bottom:36px;">
+          Murales realizados en Bogotá entre 2019 y 2025. Encargos privados, comerciales y proyectos comunitarios.
+        </p>
+        <div class="obra-gallery">
+          {murales.map((obra) => (
+            <a
+              href={`/mi-obra/${obra.id}`}
+              class="obra-item"
+              style={`grid-column: span ${obra.data.span}; aspect-ratio: ${obra.data.span >= 6 ? '16/10' : '4/5'};`}
+            >
+              <div class={`ph ${obra.data.color}`} style="min-height:100%;"></div>
+              <div class="info">
+                <h5>{obra.data.titulo}</h5>
+                <div class="meta">{obra.data.lugar} · {obra.data.tecnica}</div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <!-- Plástica -->
+      <div class="tab-content tab-plastica-content" style="display:none;">
+        <p class="lead" style="margin-bottom:36px;">
+          Pintura sobre lienzo y obra digital. Una práctica más íntima donde exploro figuras, plantas y retratos.
+        </p>
+        <div class="obra-gallery">
+          {lienzos.map((obra) => (
+            <a
+              href={`/mi-obra/${obra.id}`}
+              class="obra-item"
+              style={`grid-column: span ${obra.data.span}; aspect-ratio: ${obra.data.span >= 6 ? '16/10' : '4/5'};`}
+            >
+              <div class={`ph ${obra.data.color}`} style="min-height:100%;"></div>
+              <div class="info">
+                <h5>{obra.data.titulo}</h5>
+                <div class="meta">{obra.data.lugar} · {obra.data.tecnica}</div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <CTABanner variant="obra" />
+</BaseLayout>
+
+<style>
+  /* Radios ocultos */
+  .lang-radio, .tab-radio { display: none; }
+
+  /* === STATEMENT LANGUAGE TOGGLE === */
+  .lang-btn {
+    padding: 9px 18px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  /* ES activo por defecto */
+  #lang-es:checked ~ * .lang-btn[for="lang-es"],
+  #lang-es:checked ~ .statement-toggle .lang-btn:first-child {
+    background: var(--violet);
+    color: var(--paper);
+  }
+  #lang-en:checked ~ * .lang-btn[for="lang-en"],
+  #lang-en:checked ~ .statement-toggle .lang-btn:last-child {
+    background: var(--violet);
+    color: var(--paper);
+  }
+
+  /* === OBRA TABS === */
+  .tab-btn {
+    padding: 14px 4px;
+    font-family: var(--display);
+    font-size: 22px;
+    letter-spacing: -0.02em;
+    color: var(--ink-mute);
+    position: relative;
+    margin-right: 32px;
+    font-weight: 400;
+    cursor: pointer;
+  }
+
+  #tab-mural:checked ~ .obra-tabs .tab-btn[for="tab-mural"],
+  #tab-plastica:checked ~ .obra-tabs .tab-btn[for="tab-plastica"] {
+    color: var(--ink);
+  }
+  #tab-mural:checked ~ .obra-tabs .tab-btn[for="tab-mural"]::after,
+  #tab-plastica:checked ~ .obra-tabs .tab-btn[for="tab-plastica"]::after {
+    content: "";
+    position: absolute;
+    bottom: -1px; left: 0; right: 0;
+    height: 3px;
+    background: var(--magenta);
+  }
+
+  /* Mostrar/ocultar contenido de tab */
+  #tab-mural:checked ~ .tab-content.tab-mural-content { display: block; }
+  #tab-plastica:checked ~ .tab-content.tab-mural-content { display: none; }
+  #tab-plastica:checked ~ .tab-content.tab-plastica-content { display: block; }
+  #tab-mural:checked ~ .tab-content.tab-plastica-content { display: none; }
+</style>
+
+<script>
+  /* Statement toggle — JS ligero para mostrar/ocultar textos según radio seleccionado */
+  function initStatementToggle() {
+    const radios = document.querySelectorAll<HTMLInputElement>('.lang-radio');
+    const elementsES = document.querySelectorAll('.lang-kicker-es, .lang-text-es, .lang-content-es');
+    const elementsEN = document.querySelectorAll('.lang-kicker-en, .lang-text-en, .lang-content-en');
+
+    function update() {
+      const selectedES = document.getElementById('lang-es') as HTMLInputElement;
+      const isES = selectedES?.checked;
+      elementsES.forEach(el => (el as HTMLElement).style.display = isES ? '' : 'none');
+      elementsEN.forEach(el => (el as HTMLElement).style.display = isES ? 'none' : '');
+    }
+
+    radios.forEach(r => r.addEventListener('change', update));
+    update();
+  }
+
+  /* Tab toggle */
+  function initTabToggle() {
+    const tabRadios = document.querySelectorAll<HTMLInputElement>('.tab-radio');
+    const muralContent = document.querySelector<HTMLElement>('.tab-mural-content');
+    const plasticaContent = document.querySelector<HTMLElement>('.tab-plastica-content');
+
+    function update() {
+      const selectedMural = document.getElementById('tab-mural') as HTMLInputElement;
+      if (muralContent) muralContent.style.display = selectedMural?.checked ? 'block' : 'none';
+      if (plasticaContent) plasticaContent.style.display = selectedMural?.checked ? 'none' : 'block';
+    }
+
+    tabRadios.forEach(r => r.addEventListener('change', update));
+    update();
+  }
+
+  initStatementToggle();
+  initTabToggle();
+</script>

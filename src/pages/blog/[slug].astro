@@ -1,0 +1,166 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection, render } from 'astro:content';
+import { SITE } from '../../config/site';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts
+    .filter(p => !p.data.draft)
+    .map((post) => ({
+      params: { slug: post.id },
+      props: { post },
+    }));
+}
+
+const { post } = Astro.props;
+const { data } = post;
+const { Content } = await render(post);
+
+const formatDate = (d: Date) =>
+  d.toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' });
+---
+
+<BaseLayout
+  title={`${data.title} · Blog · Laurel.gfk`}
+  description={data.description}
+  active="blog"
+>
+  <slot name="head" slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": data.title,
+      "description": data.description,
+      "datePublished": data.pubDate.toISOString(),
+      "dateModified": (data.updatedDate ?? data.pubDate).toISOString(),
+      "author": {
+        "@type": "Person",
+        "name": data.author,
+        "url": "https://laurelgfk.com"
+      },
+      "publisher": {
+        "@type": "Person",
+        "name": "Laurel.gfk",
+        "url": "https://laurelgfk.com"
+      },
+      "url": `https://laurelgfk.com/blog/${post.id}`,
+      "keywords": data.tags.join(', ')
+    })} />
+  </slot>
+
+  <!-- Header -->
+  <section class="page-head reveal">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="/">Inicio</a>
+        <span>/</span>
+        <a href="/blog">Blog</a>
+        <span>/</span>
+        <span>{data.title}</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Artículo -->
+  <section style="padding-top:0;" class="reveal">
+    <div class="container">
+      <div style="max-width:720px; margin:0 auto;">
+        <!-- Meta -->
+        <div style="font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--ink-mute); margin-bottom:20px; display:flex; gap:16px; flex-wrap:wrap;">
+          <span>{formatDate(data.pubDate)}</span>
+          <span>Por {data.author}</span>
+          {data.tags.map(t => <span style="color:var(--magenta);">#{t}</span>)}
+        </div>
+
+        <!-- Título -->
+        <h1 style="font-family:var(--display); font-size:clamp(36px,5vw,64px); letter-spacing:-0.025em; font-weight:300; line-height:1.05; margin:0 0 40px; text-wrap:balance;">
+          {data.title}
+        </h1>
+
+        <!-- Separador -->
+        <div style="height:3px; background:linear-gradient(90deg, var(--violet) 0%, var(--magenta) 50%, var(--lime) 100%); border-radius:2px; margin-bottom:48px;"></div>
+
+        <!-- Contenido -->
+        <div class="blog-content">
+          <Content />
+        </div>
+
+        <!-- Tags -->
+        {data.tags.length > 0 && (
+          <div style="margin-top:48px; padding-top:24px; border-top:1px solid var(--line); display:flex; gap:8px; flex-wrap:wrap;">
+            {data.tags.map(t => (
+              <span style="font-family:var(--mono); font-size:10.5px; letter-spacing:0.1em; text-transform:uppercase; padding:4px 10px; border:1px solid var(--line-strong); border-radius:999px; color:var(--ink-mute);">
+                {t}
+              </span>
+            ))}
+          </div>
+        )}
+
+        <!-- Navegación -->
+        <div style="margin-top:48px; display:flex; justify-content:space-between; gap:16px;">
+          <a href="/blog" class="btn">← Volver al blog</a>
+          <a href={`https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent(`Leí "${data.title}" en tu blog`)}`}
+             target="_blank" rel="noopener noreferrer" class="btn">
+            Comentar por WhatsApp ↗
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Estilos para el contenido del blog */
+  .blog-content {
+    font-size: clamp(17px, 1.4vw, 19px);
+    line-height: 1.7;
+    color: var(--ink-soft);
+  }
+  .blog-content p { margin: 0 0 24px; text-wrap: pretty; }
+  .blog-content h2 {
+    font-family: var(--display);
+    font-size: clamp(24px, 2.5vw, 36px);
+    letter-spacing: -0.02em;
+    font-weight: 400;
+    margin: 48px 0 16px;
+    color: var(--ink);
+  }
+  .blog-content h3 {
+    font-family: var(--display);
+    font-size: clamp(20px, 2vw, 28px);
+    letter-spacing: -0.02em;
+    font-weight: 400;
+    margin: 36px 0 12px;
+    color: var(--ink);
+  }
+  .blog-content ul, .blog-content ol {
+    margin: 0 0 24px;
+    padding-left: 24px;
+  }
+  .blog-content li { margin-bottom: 8px; }
+  .blog-content a { color: var(--magenta); text-decoration: underline; }
+  .blog-content a:hover { color: var(--magenta-deep); }
+  .blog-content strong { color: var(--ink); font-weight: 600; }
+  .blog-content em { font-style: italic; }
+  .blog-content blockquote {
+    border-left: 3px solid var(--magenta);
+    padding-left: 20px;
+    margin: 32px 0;
+    font-style: italic;
+    color: var(--ink-mute);
+  }
+  .blog-content hr {
+    border: none;
+    border-top: 1px solid var(--line);
+    margin: 40px 0;
+  }
+  .blog-content p:first-of-type::first-letter {
+    font-family: var(--display);
+    font-size: 4.2em;
+    float: left;
+    line-height: 0.85;
+    padding: 6px 12px 0 0;
+    color: var(--violet);
+  }
+</style>

@@ -1,0 +1,39 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../config/site';
+
+const waUrl = `https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent(SITE.whatsappMsg)}`;
+---
+
+<BaseLayout
+  title="¡Mensaje recibido! · Laurel.gfk"
+  description="Gracias por escribirme. Respondo en menos de 48 horas."
+  noindex={true}
+>
+  <section style="padding: clamp(80px, 12vw, 160px) 0; text-align:center; min-height:70vh; display:flex; align-items:center;">
+    <div class="container">
+      <!-- Ícono check -->
+      <div style="width:80px; height:80px; border-radius:50%; background:var(--lime); display:inline-flex; align-items:center; justify-content:center; margin-bottom:32px;">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+
+      <div class="kicker" style="justify-content:center;">¡Recibido!</div>
+      <h1 class="h-section" style="text-wrap:balance; max-width:18ch; margin:0 auto 24px;">
+        Gracias por escribirme, <em>ya llegó tu mensaje</em>.
+      </h1>
+      <p class="lead" style="margin:0 auto 40px; text-align:center;">
+        Te respondo en menos de 48 horas. Si necesitas algo urgente,
+        escríbeme directamente por WhatsApp.
+      </p>
+
+      <div style="display:inline-flex; gap:12px; flex-wrap:wrap; justify-content:center;">
+        <a href={waUrl} target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+          WhatsApp ↗
+        </a>
+        <a href="/" class="btn">Volver al inicio</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

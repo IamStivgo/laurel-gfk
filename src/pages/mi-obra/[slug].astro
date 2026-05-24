@@ -1,0 +1,123 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CTABanner from '../../components/ui/CTABanner.astro';
+import { getCollection, render } from 'astro:content';
+import { SITE } from '../../config/site';
+
+export async function getStaticPaths() {
+  const obras = await getCollection('obras');
+  return obras.map((obra) => ({
+    params: { slug: obra.id },
+    props: { obra },
+  }));
+}
+
+const { obra } = Astro.props;
+const { data } = obra;
+const { Content } = await render(obra);
+
+const categoriaLabel = data.categoria === 'mural' ? 'Mural' : data.categoria === 'lienzo' ? 'Lienzo' : 'Digital';
+const waMsg = encodeURIComponent(`¡Hola Laurel! Me interesa la obra "${data.titulo}" (${categoriaLabel}). ¿Está disponible?`);
+const waUrl = `https://wa.me/${SITE.whatsapp}?text=${waMsg}`;
+
+const schemaType = data.categoria === 'mural' ? 'Painting' : 'VisualArtwork';
+---
+
+<BaseLayout
+  title={`${data.titulo} · ${categoriaLabel} · Laurel.gfk`}
+  description={data.descripcion ?? `${data.titulo} — ${data.tecnica}, ${data.año}. ${data.lugar}. Obra de Laurel.gfk.`}
+  active="obra"
+>
+  <slot name="head" slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": schemaType,
+      "name": data.titulo,
+      "dateCreated": data.año,
+      "locationCreated": { "@type": "Place", "name": data.lugar },
+      "artMedium": data.tecnica,
+      "artworkSurface": data.categoria === 'mural' ? "Pared / muro" : "Lienzo",
+      "creator": { "@type": "Person", "name": "Laurel.gfk", "url": "https://laurelgfk.com" },
+      "description": data.descripcion,
+      "url": `https://laurelgfk.com/mi-obra/${obra.id}`
+    })} />
+  </slot>
+
+  <!-- Header -->
+  <section class="page-head reveal">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="/">Inicio</a>
+        <span>/</span>
+        <a href="/mi-obra">Mi obra</a>
+        <span>/</span>
+        <span>{data.titulo}</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Detalle -->
+  <section style="padding-top:0;" class="reveal">
+    <div class="container">
+      <div style="display:grid; grid-template-columns:1fr 1.4fr; gap:clamp(32px,5vw,80px); align-items:start;">
+
+        <!-- Imagen / Placeholder -->
+        <div style="position:sticky; top:96px;">
+          <div style="aspect-ratio:4/5; border-radius:var(--radius-lg); overflow:hidden;">
+            <div class={`ph ${data.color}`} style="height:100%;">
+              <span class="label">{data.titulo} · {data.año}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Info -->
+        <div>
+          <div class="kicker">{categoriaLabel} · {data.año}</div>
+          <h1 class="h-section" style="margin-bottom:32px;">{data.titulo}</h1>
+
+          <!-- Metadata -->
+          <div style="border:1px solid var(--line); border-radius:var(--radius-lg); padding:24px; margin-bottom:32px; display:flex; flex-direction:column; gap:16px; background:var(--paper-2);">
+            <div style="display:flex; justify-content:space-between; padding-bottom:12px; border-bottom:1px solid var(--line);">
+              <span style="font-family:var(--mono); font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--ink-mute);">Técnica</span>
+              <span style="font-weight:600;">{data.tecnica}</span>
+            </div>
+            {data.dimensiones && (
+              <div style="display:flex; justify-content:space-between; padding-bottom:12px; border-bottom:1px solid var(--line);">
+                <span style="font-family:var(--mono); font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--ink-mute);">Dimensiones</span>
+                <span style="font-weight:600;">{data.dimensiones}</span>
+              </div>
+            )}
+            <div style="display:flex; justify-content:space-between; padding-bottom:12px; border-bottom:1px solid var(--line);">
+              <span style="font-family:var(--mono); font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--ink-mute);">Lugar</span>
+              <span style="font-weight:600;">{data.lugar}</span>
+            </div>
+            <div style="display:flex; justify-content:space-between;">
+              <span style="font-family:var(--mono); font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--ink-mute);">Año</span>
+              <span style="font-weight:600;">{data.año}</span>
+            </div>
+          </div>
+
+          <!-- Descripción del frontmatter -->
+          {data.descripcion && (
+            <p class="lead" style="margin-bottom:24px;">{data.descripcion}</p>
+          )}
+
+          <!-- Contenido del Markdown (si hay) -->
+          <div class="statement">
+            <Content />
+          </div>
+
+          <!-- CTA -->
+          <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:32px;">
+            <a href={waUrl} target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+              Consultar por WhatsApp →
+            </a>
+            <a href="/mi-obra" class="btn">← Ver toda la obra</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <CTABanner variant="obra" />
+</BaseLayout>
