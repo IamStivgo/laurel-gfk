@@ -5,6 +5,8 @@ import Nav from '../components/ui/Nav.astro';
 import Footer from '../components/ui/Footer.astro';
 import WhatsAppFAB from '../components/ui/WhatsAppFAB.astro';
 import Reveal from '../components/ui/Reveal.astro';
+import Analytics from '@vercel/analytics/astro';
+import SpeedInsights from '@vercel/speed-insights/astro';
 
 interface Props {
   title: string;
@@ -120,5 +122,45 @@ const ogImage = new URL(image, SITE.url).href;
     <Footer />
     <WhatsAppFAB />
     <Reveal />
+
+    <!-- Vercel Analytics + Speed Insights -->
+    <Analytics />
+    <SpeedInsights />
+
+    <!-- Custom events: WhatsApp FAB, cotización, Instagram, contacto -->
+    <script>
+      import { track } from '@vercel/analytics';
+
+      document.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        const anchor = target.closest('a');
+        if (!anchor) return;
+
+        const href = anchor.getAttribute('href') ?? '';
+
+        // WhatsApp FAB o cualquier link a wa.me
+        if (href.includes('wa.me')) {
+          track('whatsapp_click', { source: anchor.classList.contains('wa-fab') ? 'fab' : 'inline' });
+        }
+        // Botones de cotización / comisión
+        else if (anchor.classList.contains('nav-cta') || anchor.textContent?.toLowerCase().includes('cotiz') || anchor.textContent?.toLowerCase().includes('comis')) {
+          track('cotizacion_click');
+        }
+        // Instagram
+        else if (href.includes('instagram.com')) {
+          track('instagram_click');
+        }
+        // Linktree
+        else if (href.includes('linktr.ee')) {
+          track('linktree_click');
+        }
+      });
+
+      // Submit del formulario de contacto
+      const form = document.querySelector('form[name="contacto"]');
+      form?.addEventListener('submit', () => {
+        track('contacto_submit');
+      });
+    </script>
   </body>
 </html>
