@@ -1,5 +1,6 @@
 ---
 import { SITE } from '../../config/site';
+import ThemeToggle from './ThemeToggle.astro';
 
 interface Props {
   active?: 'inicio' | 'obra' | 'productos' | 'cursos' | 'blog' | 'contacto';
@@ -28,7 +29,7 @@ const waUrl = `https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent(SITE.wha
       </span>
     </a>
 
-    <!-- Desktop links -->
+    <!-- Desktop links + toggle -->
     <div class="nav-links">
       {NAV_ITEMS.map(it => (
         <a href={it.href} class={active === it.id ? 'active' : ''}>{it.label}</a>
@@ -36,18 +37,22 @@ const waUrl = `https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent(SITE.wha
       <a href={waUrl} target="_blank" rel="noopener noreferrer" class="nav-cta">
         Comisión <span>↗</span>
       </a>
+      <ThemeToggle />
     </div>
 
-    <!-- Burger (mobile) -->
-    <button
-      class="nav-burger"
-      aria-label="Abrir menú"
-      aria-expanded="false"
-      aria-controls="mobile-menu"
-      id="nav-burger"
-    >
-      <span></span>
-    </button>
+    <!-- Acciones mobile: toggle + burger -->
+    <div class="nav-mobile-actions">
+      <ThemeToggle />
+      <button
+        class="nav-burger"
+        aria-label="Abrir menú"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        id="nav-burger"
+      >
+        <span></span>
+      </button>
+    </div>
   </div>
 </nav>
 
@@ -80,6 +85,17 @@ const waUrl = `https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent(SITE.wha
     flex-shrink: 0;
     display: inline-block;
   }
+
+  /* Grupo toggle + burger — solo visible en mobile */
+  .nav-mobile-actions {
+    display: none;
+    align-items: center;
+    gap: 8px;
+  }
+
+  @media (max-width: 900px) {
+    .nav-mobile-actions { display: flex; }
+  }
 </style>
 
 <script>
@@ -87,11 +103,24 @@ const waUrl = `https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent(SITE.wha
   const mobileMenu = document.getElementById('mobile-menu');
   const closeBtn = document.getElementById('mobile-close');
 
+  /** Elementos focusables dentro del mobile menu */
+  function getFocusableElements(): HTMLElement[] {
+    if (!mobileMenu) return [];
+    return Array.from(
+      mobileMenu.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      )
+    ).filter(el => !el.hasAttribute('hidden'));
+  }
+
   function openMenu() {
     mobileMenu!.style.display = 'flex';
     mobileMenu!.setAttribute('aria-hidden', 'false');
     burger!.setAttribute('aria-expanded', 'true');
     document.body.style.overflow = 'hidden';
+    // Mover foco al primer elemento del menú
+    const focusable = getFocusableElements();
+    if (focusable.length) focusable[0].focus();
   }
 
   function closeMenu() {
@@ -99,13 +128,37 @@ const waUrl = `https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent(SITE.wha
     mobileMenu!.setAttribute('aria-hidden', 'true');
     burger!.setAttribute('aria-expanded', 'false');
     document.body.style.overflow = '';
+    // Devolver foco al burger
+    burger?.focus();
   }
 
   burger?.addEventListener('click', openMenu);
   closeBtn?.addEventListener('click', closeMenu);
 
-  // Cerrar con Escape
+  // Focus trap dentro del menú + Escape para cerrar
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeMenu();
+    if (mobileMenu?.getAttribute('aria-hidden') === 'false') {
+      if (e.key === 'Escape') {
+        closeMenu();
+        return;
+      }
+      if (e.key === 'Tab') {
+        const focusable = getFocusableElements();
+        if (!focusable.length) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          }
+        } else {
+          if (document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      }
+    }
   });
 </script>

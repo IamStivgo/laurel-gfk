@@ -1,0 +1,19 @@
+---
+/**
+ * JsonLd.astro — Helper genérico para inyectar JSON-LD en el <head>.
+ *
+ * Uso (dentro del slot "head" de BaseLayout):
+ *   <JsonLd schema={{ "@context": "...", "@type": "Article", ... }} />
+ *
+ * O bien pasar múltiples schemas como array:
+ *   <JsonLd schema={[schema1, schema2]} />
+ */
+
+interface Props {
+  schema: Record<string, unknown> | Record<string, unknown>[];
+}
+
+const { schema } = Astro.props;
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(schema, null, 0)} />

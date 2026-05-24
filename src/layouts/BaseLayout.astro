@@ -100,16 +100,12 @@ const ogImage = new URL(image, SITE.url).href;
       href={`${SITE.url}/rss.xml`}
     />
 
-    <!-- Preconnect solo a dominios realmente usados -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- DNS prefetch para servicios externos -->
     <link rel="dns-prefetch" href="https://wa.me" />
 
-    <!-- Google Fonts: Fraunces + Inter + JetBrains Mono -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
+    <!-- Preload de fuentes críticas (hero + body above-fold) -->
+    <link rel="preload" href="/fonts/fraunces-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
 
     <!-- Slot para schemas JSON-LD o meta adicional por página -->
     <slot name="head" />
