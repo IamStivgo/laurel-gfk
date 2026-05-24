@@ -97,6 +97,91 @@
   --mono: "JetBrains Mono", "SF Mono", ui-monospace, monospace;
 }
 
+/* === Dark mode ===
+   Strategy: --paper, --ink, --violet, --magenta, --yellow, --lime son tokens literales
+   de marca y NO se intercambian. Solo los tokens de superficie secundaria cambian:
+   --paper-2 (superficie elevada), --ink-soft/-mute (texto secundario),
+   --line/-strong (bordes), --violet-deep (fondo CTA). */
+[data-theme="dark"] {
+  --paper-2: #241955;
+  --ink-soft: rgba(244, 239, 230, 0.82);
+  --ink-mute: rgba(244, 239, 230, 0.52);
+  --line: rgba(244, 239, 230, 0.12);
+  --line-strong: rgba(244, 239, 230, 0.55);
+  --violet-deep: #0A0618;
+}
+
+/* Body y elementos de superficie de página necesitan overrides explícitos
+   porque usan --paper/--ink como literales que queremos intercambiar. */
+[data-theme="dark"] body { background: #1A1238; color: #F4EFE6; }
+[data-theme="dark"] .mobile-menu { background: #1A1238; }
+[data-theme="dark"] .nav { background: rgba(26, 18, 56, 0.94); }
+[data-theme="dark"] .nav::before { opacity: 0.85; }
+[data-theme="dark"] ::selection { background: var(--yellow); color: #1A1238; }
+[data-theme="dark"] .nav-links a:hover { color: #F4EFE6; }
+[data-theme="dark"] .nav-burger span,
+[data-theme="dark"] .nav-burger span::before,
+[data-theme="dark"] .nav-burger span::after { background: #F4EFE6; }
+[data-theme="dark"] .theme-toggle { color: #F4EFE6; }
+[data-theme="dark"] .theme-toggle:hover {
+  background: var(--yellow);
+  border-color: var(--yellow);
+  color: #1A1238;
+}
+[data-theme="dark"] .obra-tabs button.active { color: #F4EFE6; }
+[data-theme="dark"] .course-link { color: #F4EFE6; }
+
+/* Secciones siempre oscuras en light mode quedan AÚN más oscuras en dark mode
+   para mantener jerarquía visual. */
+[data-theme="dark"] .pillars { background: #0F0A24; }
+[data-theme="dark"] .pillar { background: #0F0A24; }
+[data-theme="dark"] .pillars-grid { background: rgba(244, 239, 230, 0.08); border-color: rgba(244, 239, 230, 0.12); }
+[data-theme="dark"] .pillar p { color: rgba(244, 239, 230, 0.78); }
+[data-theme="dark"] .pillar .pn { color: rgba(244, 239, 230, 0.55); }
+[data-theme="dark"] .foot { background: #07041A; }
+
+/* Cards que usan --paper en light mode usan --paper-2 en dark para
+   mantenerse distintas del body sin ser blanco cegador. */
+[data-theme="dark"] .service-tile { background: var(--paper-2); }
+[data-theme="dark"] .course-card { background: var(--paper-2); }
+[data-theme="dark"] .course-detail-side { background: #0F0A24; }
+[data-theme="dark"] .contact-form { background: var(--paper-2); }
+
+/* Hover dark mode para service tiles: las tarjetas oscuras aclaran a acento brillante
+   y fuerzan texto oscuro para contraste. */
+[data-theme="dark"] .service-tile:hover { color: #1F1640; }
+[data-theme="dark"] .service-tile:hover .num,
+[data-theme="dark"] .service-tile:hover p,
+[data-theme="dark"] .service-tile:hover h4 { color: #1F1640; }
+[data-theme="dark"] .service-tile:nth-child(3n+3):hover { color: #F4EFE6; }
+[data-theme="dark"] .service-tile:nth-child(3n+3):hover .num,
+[data-theme="dark"] .service-tile:nth-child(3n+3):hover p,
+[data-theme="dark"] .service-tile:nth-child(3n+3):hover h4 { color: #F4EFE6; }
+
+/* Hover dark mode para pillars: fondos acento claro con texto oscuro en
+   yellow/lime, texto cream en magenta. */
+[data-theme="dark"] .pillar:nth-child(1):hover,
+[data-theme="dark"] .pillar:nth-child(2):hover { color: #1F1640; }
+[data-theme="dark"] .pillar:nth-child(1):hover .pn,
+[data-theme="dark"] .pillar:nth-child(1):hover p,
+[data-theme="dark"] .pillar:nth-child(2):hover .pn,
+[data-theme="dark"] .pillar:nth-child(2):hover p { color: #1F1640; }
+
+[data-theme="dark"] .wa-fab { box-shadow: 0 8px 24px rgba(37, 211, 102, 0.45), 0 0 0 3px #1A1238; }
+[data-theme="dark"] .ph.violet { background-color: #4A3B82; }
+[data-theme="dark"] .filter-bar { background: var(--paper-2); }
+[data-theme="dark"] .lightbox-inner { background: var(--paper-2); }
+
+/* Transiciones suaves al cambiar de tema. */
+html, body, .nav, .pillars, .pillar, .cta-banner, .foot, .service-tile, .course-card,
+.producto-img, .course-detail-side, .obra-portrait, .about-portrait, .ph,
+.statement-toggle button, .btn, .filter-bar button, .nav-links a, .theme-toggle,
+.social-row, .mobile-menu, .producto-card .pfoot, .obra-item, .ps-card, .ps-card .meta,
+.hero-portrait, .contact-form, .producto-card .pname {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* === Reset === */
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
@@ -262,6 +347,9 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 @media (max-width: 900px) {
   .nav-links { display: none; }
   .nav-burger { display: flex; }
+}
+@media (min-width: 901px) {
+  .nav-mobile-actions { display: none !important; }
 }
 
 .mobile-menu {
