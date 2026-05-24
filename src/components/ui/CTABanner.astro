@@ -1,0 +1,72 @@
+---
+/**
+ * Banner CTA reutilizable.
+ * Variantes: 'landing' | 'obra' | 'productos' | 'cursos'
+ */
+import { SITE } from '../../config/site';
+
+type Variant = 'landing' | 'obra' | 'productos' | 'cursos';
+
+interface Props {
+  variant?: Variant;
+}
+
+const { variant = 'landing' } = Astro.props;
+
+const waUrl = `https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent(SITE.whatsappMsg)}`;
+
+const content: Record<Variant, { title: string; lead: string; cta1: string; cta2: string; href1: string; href2: string }> = {
+  landing: {
+    title: '¿Tienes un espacio <em>para transformar</em>?',
+    lead: 'Murales, comisiones, prints y más. Hablemos de tu proyecto.',
+    cta1: 'Ver mi obra',
+    cta2: 'Escribir por WhatsApp ↗',
+    href1: '/mi-obra',
+    href2: waUrl,
+  },
+  obra: {
+    title: '¿Te interesa una <em>pieza original</em>?',
+    lead: 'Comisiones personalizadas y obra disponible en el shop.',
+    cta1: 'Ver productos',
+    cta2: 'Escribir por WhatsApp ↗',
+    href1: '/productos',
+    href2: waUrl,
+  },
+  productos: {
+    title: '¿Buscas algo <em>único</em>?',
+    lead: 'Comisiones abiertas. Cuéntame qué tienes en mente.',
+    cta1: 'Formulario de contacto',
+    cta2: 'WhatsApp ↗',
+    href1: '/contacto',
+    href2: waUrl,
+  },
+  cursos: {
+    title: '¿Lista para <em>pintar</em>?',
+    lead: 'Inscríbete o escríbeme para más info sobre los cursos.',
+    cta1: 'Contacto',
+    cta2: 'WhatsApp ↗',
+    href1: '/contacto',
+    href2: waUrl,
+  },
+};
+
+const c = content[variant];
+---
+
+<section class="cta-banner">
+  <div class="container">
+    <h2 set:html={c.title} />
+    <p class="lead">{c.lead}</p>
+    <div class="actions">
+      <a href={c.href1} class="btn btn-primary">{c.cta1}</a>
+      <a
+        href={c.href2}
+        target={c.href2.startsWith('http') ? '_blank' : undefined}
+        rel={c.href2.startsWith('http') ? 'noopener noreferrer' : undefined}
+        class="btn"
+      >
+        {c.cta2}
+      </a>
+    </div>
+  </div>
+</section>

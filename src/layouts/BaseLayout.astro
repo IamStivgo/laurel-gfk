@@ -1,6 +1,10 @@
 ---
 import '../styles/global.css';
 import { SITE } from '../config/site';
+import Nav from '../components/ui/Nav.astro';
+import Footer from '../components/ui/Footer.astro';
+import WhatsAppFAB from '../components/ui/WhatsAppFAB.astro';
+import Reveal from '../components/ui/Reveal.astro';
 
 interface Props {
   title: string;
@@ -8,6 +12,7 @@ interface Props {
   image?: string;
   noindex?: boolean;
   canonical?: string;
+  active?: 'inicio' | 'obra' | 'productos' | 'cursos' | 'blog' | 'contacto';
 }
 
 const {
@@ -16,6 +21,7 @@ const {
   image = '/og-default.jpg',
   noindex = false,
   canonical,
+  active,
 } = Astro.props;
 
 const canonicalURL = canonical ?? new URL(Astro.url.pathname, SITE.url).href;
@@ -65,6 +71,12 @@ const ogImage = new URL(image, SITE.url).href;
     <slot name="head" />
   </head>
   <body>
-    <slot />
+    <Nav active={active} />
+    <main>
+      <slot />
+    </main>
+    <Footer />
+    <WhatsAppFAB />
+    <Reveal />
   </body>
 </html>

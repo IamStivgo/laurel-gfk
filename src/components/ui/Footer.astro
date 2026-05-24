@@ -1,0 +1,60 @@
+---
+import { SITE } from '../../config/site';
+
+const waUrl = `https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent(SITE.whatsappMsg)}`;
+const year = new Date().getFullYear();
+---
+
+<footer class="foot">
+  <div class="container">
+    <div class="foot-grid">
+      <!-- Brand col -->
+      <div>
+        <div class="foot-brand">laurel<em>.</em>gfk</div>
+        <p>
+          Artista plástica, muralista, docente y gestora cultural.
+          10 años pintando desde Bogotá, Colombia. Comisiones abiertas.
+        </p>
+      </div>
+
+      <!-- Nav col -->
+      <div>
+        <h5>Navegación</h5>
+        <ul>
+          <li><a href="/">Inicio</a></li>
+          <li><a href="/mi-obra">Mi obra</a></li>
+          <li><a href="/productos">Productos</a></li>
+          <li><a href="/cursos">Cursos</a></li>
+          <li><a href="/blog">Blog</a></li>
+        </ul>
+      </div>
+
+      <!-- Servicios col -->
+      <div>
+        <h5>Servicios</h5>
+        <ul>
+          <li><a href="/#servicios">Murales & graffiti</a></li>
+          <li><a href="/#servicios">Retratos & lienzo</a></li>
+          <li><a href="/#servicios">Fotografía & dibujo</a></li>
+          <li><a href="/#servicios">Curaduría & gestión</a></li>
+        </ul>
+      </div>
+
+      <!-- Contacto col -->
+      <div>
+        <h5>Contacto</h5>
+        <ul>
+          <li><a href={SITE.instagram} target="_blank" rel="noopener noreferrer">Instagram ↗</a></li>
+          <li><a href={SITE.linktree} target="_blank" rel="noopener noreferrer">Linktree ↗</a></li>
+          <li><a href={waUrl} target="_blank" rel="noopener noreferrer">WhatsApp ↗</a></li>
+          <li><a href="/contacto">Formulario de contacto</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="foot-bot">
+      <span>© {year} LAUREL.GFK · TODOS LOS DERECHOS RESERVADOS</span>
+      <span>BOGOTÁ · COLOMBIA</span>
+    </div>
+  </div>
+</footer>

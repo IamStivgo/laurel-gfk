@@ -1,0 +1,19 @@
+---
+/**
+ * Placeholder de imagen con colores del diseño.
+ * Usar mientras no haya imágenes reales.
+ *
+ * Uso: <Placeholder color="lime" label="Mural 2023" />
+ */
+interface Props {
+  color?: 'lime' | 'magenta' | 'yellow' | 'violet' | 'ink' | 'paper';
+  label?: string;
+  class?: string;
+}
+
+const { color, label, class: cls } = Astro.props;
+---
+
+<div class:list={['ph', color, cls]}>
+  {label && <span class="label">{label}</span>}
+</div>

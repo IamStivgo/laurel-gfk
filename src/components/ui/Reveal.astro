@@ -1,0 +1,32 @@
+---
+/**
+ * Añade la clase .reveal a todas las <section> de la página
+ * y usa IntersectionObserver para agregar .in cuando son visibles.
+ * Se usa una sola vez por página (generalmente en BaseLayout).
+ */
+---
+
+<script>
+  function initReveal() {
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add('in');
+            io.unobserve(e.target); // solo animar una vez
+          }
+        });
+      },
+      { threshold: 0.06 }
+    );
+
+    document.querySelectorAll('section.reveal').forEach((el) => io.observe(el));
+  }
+
+  // Ejecutar cuando el DOM está listo
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initReveal);
+  } else {
+    initReveal();
+  }
+</script>

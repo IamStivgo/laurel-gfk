@@ -1,0 +1,46 @@
+---
+/**
+ * Wrapper sobre <Image> de Astro con fallback a Placeholder.
+ * Si src no existe, muestra el placeholder coloreado.
+ *
+ * Uso:
+ *   <OptimizedImage src={img} alt="Mural" width={800} height={1000} color="violet" label="Mural" />
+ */
+import { Image } from 'astro:assets';
+import Placeholder from './Placeholder.astro';
+
+interface Props {
+  src?: ImageMetadata | string | null;
+  alt: string;
+  width?: number;
+  height?: number;
+  color?: 'lime' | 'magenta' | 'yellow' | 'violet' | 'ink' | 'paper';
+  label?: string;
+  class?: string;
+  loading?: 'lazy' | 'eager';
+}
+
+const {
+  src,
+  alt,
+  width = 800,
+  height = 1000,
+  color,
+  label,
+  class: cls,
+  loading = 'lazy',
+} = Astro.props;
+---
+
+{src ? (
+  <Image
+    src={src as ImageMetadata}
+    alt={alt}
+    width={width}
+    height={height}
+    class={cls}
+    loading={loading}
+  />
+) : (
+  <Placeholder color={color} label={label ?? alt} class={cls} />
+)}

@@ -1,0 +1,111 @@
+---
+import { SITE } from '../../config/site';
+
+interface Props {
+  active?: 'inicio' | 'obra' | 'productos' | 'cursos' | 'blog' | 'contacto';
+}
+
+const { active } = Astro.props;
+
+const NAV_ITEMS = [
+  { href: '/', label: 'Inicio', id: 'inicio' },
+  { href: '/mi-obra', label: 'Mi obra', id: 'obra' },
+  { href: '/productos', label: 'Productos', id: 'productos' },
+  { href: '/cursos', label: 'Cursos', id: 'cursos' },
+];
+
+const waUrl = `https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent(SITE.whatsappMsg)}`;
+---
+
+<nav class="nav" id="main-nav">
+  <div class="nav-inner">
+    <!-- Brand -->
+    <a href="/" class="brand">
+      <span class="brand-logo-fallback" aria-hidden="true"></span>
+      <span>
+        <span class="brand-name">laurel.gfk</span>
+        <span class="brand-sub">Artista · Bogotá</span>
+      </span>
+    </a>
+
+    <!-- Desktop links -->
+    <div class="nav-links">
+      {NAV_ITEMS.map(it => (
+        <a href={it.href} class={active === it.id ? 'active' : ''}>{it.label}</a>
+      ))}
+      <a href={waUrl} target="_blank" rel="noopener noreferrer" class="nav-cta">
+        Comisión <span>↗</span>
+      </a>
+    </div>
+
+    <!-- Burger (mobile) -->
+    <button
+      class="nav-burger"
+      aria-label="Abrir menú"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+      id="nav-burger"
+    >
+      <span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile menu -->
+<div class="mobile-menu" id="mobile-menu" aria-hidden="true" style="display:none;">
+  <div class="mobile-menu-head">
+    <a href="/" class="brand">
+      <span class="brand-logo-fallback" aria-hidden="true"></span>
+      <span>
+        <span class="brand-name">laurel.gfk</span>
+        <span class="brand-sub">Artista · Bogotá</span>
+      </span>
+    </a>
+    <button class="close" id="mobile-close" aria-label="Cerrar menú">×</button>
+  </div>
+  {NAV_ITEMS.map(it => (
+    <a href={it.href} class={active === it.id ? 'active' : ''}>{it.label}</a>
+  ))}
+  <a href={waUrl} target="_blank" rel="noopener noreferrer" style="margin-top:24px; color:var(--magenta);">
+    WhatsApp ↗
+  </a>
+</div>
+
+<style>
+  .brand-logo-fallback {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--violet);
+    flex-shrink: 0;
+    display: inline-block;
+  }
+</style>
+
+<script>
+  const burger = document.getElementById('nav-burger');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const closeBtn = document.getElementById('mobile-close');
+
+  function openMenu() {
+    mobileMenu!.style.display = 'flex';
+    mobileMenu!.setAttribute('aria-hidden', 'false');
+    burger!.setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeMenu() {
+    mobileMenu!.style.display = 'none';
+    mobileMenu!.setAttribute('aria-hidden', 'true');
+    burger!.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  }
+
+  burger?.addEventListener('click', openMenu);
+  closeBtn?.addEventListener('click', closeMenu);
+
+  // Cerrar con Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeMenu();
+  });
+</script>
