@@ -1,0 +1,23 @@
+{
+  "name": "Laurel.gfk — Arte y Murales en Bogotá",
+  "short_name": "Laurel.gfk",
+  "description": "Artista plástica y muralista en Bogotá. Murales, pintura original, prints y cursos de arte.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#15102A",
+  "theme_color": "#3D2E6E",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}
