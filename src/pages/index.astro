@@ -21,7 +21,7 @@ const waUrl = `https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent(SITE.wha
   active="inicio"
 >
   <slot name="head" slot="head">
-    <!-- Schema Person + WebSite -->
+    <!-- Schema Person + WebSite + LocalBusiness + SearchAction -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -32,15 +32,56 @@ const waUrl = `https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent(SITE.wha
           "name": "Laurel.gfk",
           "jobTitle": "Artista plástica y muralista",
           "url": "https://laurelgfk.com",
-          "sameAs": ["https://www.instagram.com/laurel.gfk", "https://linktr.ee/laurel.gfk"],
-          "address": { "@type": "PostalAddress", "addressLocality": "Bogotá", "addressCountry": "CO" }
+          "sameAs": [
+            "https://www.instagram.com/laurel.gfk",
+            "https://linktr.ee/laurel.gfk"
+          ],
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Bogotá",
+            "addressCountry": "CO"
+          }
         },
         {
           "@type": "WebSite",
           "@id": "https://laurelgfk.com/#website",
           "url": "https://laurelgfk.com",
           "name": "Laurel.gfk",
-          "publisher": { "@id": "https://laurelgfk.com/#laurel" }
+          "publisher": { "@id": "https://laurelgfk.com/#laurel" },
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": {
+              "@type": "EntryPoint",
+              "urlTemplate": "https://laurelgfk.com/blog?q={search_term_string}"
+            },
+            "query-input": "required name=search_term_string"
+          }
+        },
+        {
+          "@type": "LocalBusiness",
+          "@id": "https://laurelgfk.com/#business",
+          "name": "Laurel.gfk — Arte y Murales",
+          "description": "Artista plástica y muralista en Bogotá. Murales, comisiones, prints y cursos de arte.",
+          "url": "https://laurelgfk.com",
+          "telephone": "+573332672352",
+          "email": "hola@laurelgfk.com",
+          "image": "https://laurelgfk.com/og-default.jpg",
+          "priceRange": "$$",
+          "currenciesAccepted": "COP",
+          "areaServed": {
+            "@type": "City",
+            "name": "Bogotá",
+            "sameAs": "https://www.wikidata.org/wiki/Q2841"
+          },
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Bogotá",
+            "addressCountry": "CO"
+          },
+          "sameAs": [
+            "https://www.instagram.com/laurel.gfk",
+            "https://linktr.ee/laurel.gfk"
+          ]
         }
       ]
     }
