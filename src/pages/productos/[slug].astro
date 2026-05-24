@@ -1,0 +1,139 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection, render } from 'astro:content';
+import { SITE } from '../../config/site';
+
+export async function getStaticPaths() {
+  const productos = await getCollection('productos');
+  return productos.map((p) => ({
+    params: { slug: p.id },
+    props: { producto: p },
+  }));
+}
+
+const { producto } = Astro.props;
+const { data } = producto;
+const { Content } = await render(producto);
+
+const STATE_LABEL: Record<string, { text: string; btn: string }> = {
+  disp: { text: 'Disponible', btn: 'Comprar por WhatsApp →' },
+  reserved: { text: 'Reservado', btn: 'Unirme a lista de espera →' },
+  open: { text: 'Por encargo', btn: 'Solicitar encargo →' },
+};
+const sl = STATE_LABEL[data.estado];
+
+const waMsg = encodeURIComponent(`¡Hola Laurel! Me interesa "${data.nombre}" — ${data.categoria}. ¿Sigue disponible?`);
+const waUrl = `https://wa.me/${SITE.whatsapp}?text=${waMsg}`;
+
+const priceNumber = data.precio.replace(/[^0-9.]/g, '');
+---
+
+<BaseLayout
+  title={`${data.nombre} · ${data.categoria} · Laurel.gfk`}
+  description={data.descripcion ?? `${data.nombre} — ${data.categoria}, ${data.tamaño}. ${data.precio}. Obra de Laurel.gfk.`}
+  active="productos"
+>
+  <slot name="head" slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Product",
+      "name": data.nombre,
+      "description": data.descripcion ?? data.categoria,
+      "brand": { "@type": "Brand", "name": "Laurel.gfk" },
+      "offers": {
+        "@type": "Offer",
+        "priceCurrency": "COP",
+        "price": priceNumber,
+        "availability": data.estado === 'disp' ? "https://schema.org/InStock" : "https://schema.org/PreOrder",
+        "url": `https://laurelgfk.com/productos/${producto.id}`,
+        "seller": { "@type": "Person", "name": "Laurel.gfk", "url": "https://laurelgfk.com" }
+      }
+    })} />
+  </slot>
+
+  <!-- Header -->
+  <section class="page-head reveal">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="/">Inicio</a>
+        <span>/</span>
+        <a href="/productos">Productos</a>
+        <span>/</span>
+        <span>{data.nombre}</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Detalle -->
+  <section style="padding-top:0;" class="reveal">
+    <div class="container">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:clamp(32px,5vw,80px); align-items:start;">
+
+        <!-- Imagen -->
+        <div style="position:sticky; top:96px;">
+          <div style="aspect-ratio:1; border-radius:var(--radius-lg); overflow:hidden;">
+            <div class={`ph ${data.color}`} style="height:100%;">
+              <span class="label">{data.nombre}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Info -->
+        <div>
+          <div class="kicker">{data.categoria}</div>
+          <h1 class="h-section" style="margin-bottom:24px;">{data.nombre}</h1>
+
+          <!-- Precio -->
+          <div style="font-family:var(--display); font-size:clamp(32px,4vw,52px); letter-spacing:-0.03em; margin-bottom:24px; color:var(--violet);">
+            {data.precio}
+          </div>
+
+          <!-- Estado -->
+          <span class={`tag ${data.estado === 'disp' ? 'disp' : ''}`}
+            style="display:inline-block; font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; padding:6px 14px; border-radius:999px; background:var(--violet); color:var(--paper); margin-bottom:32px;">
+            {sl.text}
+          </span>
+
+          <!-- Metadata -->
+          <div style="border:1px solid var(--line); border-radius:var(--radius-lg); padding:24px; margin-bottom:32px; display:flex; flex-direction:column; gap:14px; background:var(--paper-2);">
+            <div style="display:flex; justify-content:space-between; padding-bottom:12px; border-bottom:1px solid var(--line);">
+              <span style="font-family:var(--mono); font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--ink-mute);">Tamaño</span>
+              <span style="font-weight:600;">{data.tamaño}</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; padding-bottom:12px; border-bottom:1px solid var(--line);">
+              <span style="font-family:var(--mono); font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--ink-mute);">Año</span>
+              <span style="font-weight:600;">{data.año}</span>
+            </div>
+            <div style="display:flex; justify-content:space-between;">
+              <span style="font-family:var(--mono); font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--ink-mute);">Disponibilidad</span>
+              <span style="font-weight:600;">{sl.text}</span>
+            </div>
+          </div>
+
+          <!-- Descripción -->
+          {data.descripcion && (
+            <p class="lead" style="margin-bottom:24px;">{data.descripcion}</p>
+          )}
+
+          <!-- Contenido markdown -->
+          <div class="statement">
+            <Content />
+          </div>
+
+          <!-- CTA -->
+          <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:32px;">
+            <a href={waUrl} target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+              {sl.btn}
+            </a>
+            <a href="/productos" class="btn">← Ver todos los productos</a>
+          </div>
+
+          <!-- Envíos -->
+          <div style="margin-top:24px; padding:16px; background:var(--paper-2); border-radius:var(--radius); font-size:13.5px; color:var(--ink-soft);">
+            📦 Envíos nacionales en 3–5 días hábiles desde Bogotá. Internacionales bajo cotización.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
